@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,6 +49,19 @@ public class UserResource {
             User user = service.getUser(id);
             UserDto output = new UserDto(user);
             return ResponseEntity.ok().body(output);
+        } catch (NoSuchElementException e) {
+
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "User Not Found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
+        try {
+            service.deleteById(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
         } catch (NoSuchElementException e) {
 
             Map<String, String> response = new HashMap<>();
