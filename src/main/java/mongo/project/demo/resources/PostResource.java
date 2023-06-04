@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import mongo.project.demo.entities.Post;
 import mongo.project.demo.services.PostService;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.List;
@@ -26,10 +27,23 @@ public class PostResource {
     private PostService service;
 
     @GetMapping("/posts/titlesearch")
-    public ResponseEntity<?> getPostByTitle(@RequestParam String text) {
+    public ResponseEntity<?> getPostByTitle(@RequestParam(defaultValue = "") String text) {
 
         String decoded = URL.decodeParam(text);
         List<Post> posts = service.findByTitle(decoded);
+        return ResponseEntity.ok().body(posts);
+
+    }
+
+    @GetMapping("/posts/fullsearch")
+    public ResponseEntity<?> fullSearch(@RequestParam(value = "text", defaultValue = "") String text,
+            @RequestParam(value = "minDate", defaultValue = "") String minDate,
+            @RequestParam(value = "maxDate", defaultValue = "") String maxDate) {
+
+        text = URL.decodeParam(text);
+        Date min = URL.convertDate(minDate, new Date(0L));
+        Date max = URL.convertDate(maxDate, new Date());
+        List<Post> posts = service.fullSearch(text, min, max);
         return ResponseEntity.ok().body(posts);
 
     }
