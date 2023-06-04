@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
 import mongo.project.demo.dto.AuthorDto;
+import mongo.project.demo.dto.CommentDto;
 import mongo.project.demo.entities.Post;
 import mongo.project.demo.entities.User;
 import mongo.project.demo.repository.PostRepository;
@@ -32,8 +33,9 @@ public class Instanciation implements CommandLineRunner {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/mm/yyyy");
         userRepository.saveAll(Arrays.asList(maria, alex, bob));
-
+        CommentDto comment1 = new CommentDto("Boa viagem", sdf.parse("21/03/2018"), new AuthorDto(alex));
         Post post1 = new Post(null, sdf.parse("21/03/2018"), "Partiu", "vou viajar hoje", new AuthorDto(maria));
+        post1.getComments().add(comment1);
 
         postRepository.save(post1);
         maria.getPosts().add(post1);

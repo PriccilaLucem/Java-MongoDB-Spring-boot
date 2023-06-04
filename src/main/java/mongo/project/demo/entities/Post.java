@@ -1,7 +1,9 @@
 package mongo.project.demo.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.List;
+import mongo.project.demo.dto.CommentDto;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,7 +19,7 @@ public class Post {
     private Date date;
     private String title;
     private String description;
-
+    private List<CommentDto> comments = new ArrayList<>();
     private AuthorDto Author;
 
     public Post() {
@@ -76,6 +78,14 @@ public class Post {
     public Post title(String title) {
         setTitle(title);
         return this;
+    }
+
+    public List<CommentDto> getComments() {
+        return this.comments;
+    }
+
+    public void setComments(List<CommentDto> comments) {
+        this.comments = comments;
     }
 
     public void setDescription(String descritption) {
