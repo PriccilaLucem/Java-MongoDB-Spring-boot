@@ -22,4 +22,9 @@ public class UserService {
         return userRepository.save(user);
 
     }
+
+    public User getUser(String id) {
+        return userRepository.findById(id).get();
+
+    }
 }
