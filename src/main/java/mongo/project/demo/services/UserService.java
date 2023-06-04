@@ -32,4 +32,10 @@ public class UserService {
         User user = userRepository.findById(id).get();
         userRepository.delete(user);
     }
+
+    public User patchUser(String id, User content) {
+
+        return userRepository.save(content);
+
+    }
 }

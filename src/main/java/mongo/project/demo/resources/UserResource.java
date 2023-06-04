@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,13 +33,6 @@ public class UserResource {
 
     @Autowired
     private UserService service;
-
-    @GetMapping
-    public ResponseEntity<List<UserDto>> findAll() {
-        List<User> list = service.findAll();
-        List<UserDto> output = list.stream().map(x -> new UserDto(x)).collect(Collectors.toList());
-        return ResponseEntity.ok().body(output);
-    }
 
     @PostMapping
     public ResponseEntity<?> postUser(@RequestBody User user) {
@@ -61,6 +55,33 @@ public class UserResource {
         UserDto output = new UserDto(service.saveNewUser(user));
         return ResponseEntity.status(HttpStatus.CREATED).body(output);
 
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> patchUser(@PathVariable String id, @RequestBody UserDto userDto) {
+        try {
+            User existentUser = service.getUser(id);
+            if (userDto.getEmail() != null) {
+                existentUser.setEmail(userDto.getEmail());
+            }
+            if (userDto.getName() != null) {
+                existentUser.setName(userDto.getName());
+            }
+            User user = service.patchUser(id, existentUser);
+
+            return ResponseEntity.accepted().body(user);
+        } catch (NoSuchElementException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "User Not Found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> findAll() {
+        List<User> list = service.findAll();
+        List<UserDto> output = list.stream().map(x -> new UserDto(x)).collect(Collectors.toList());
+        return ResponseEntity.ok().body(output);
     }
 
     @GetMapping(value = "/{id}")
