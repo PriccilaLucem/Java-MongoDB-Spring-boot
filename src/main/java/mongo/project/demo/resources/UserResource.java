@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import mongo.project.demo.dto.UserDto;
 import mongo.project.demo.entities.User;
+import mongo.project.demo.exceptions.CannotBeNullException;
 import mongo.project.demo.services.UserService;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -36,9 +41,24 @@ public class UserResource {
     }
 
     @PostMapping
-    public ResponseEntity<UserDto> postUser(@RequestBody User user) {
-        User newUser = service.saveNewUser(user);
-        UserDto output = new UserDto(newUser);
+    public ResponseEntity<?> postUser(@RequestBody User user) {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        try {
+
+            if (!violations.isEmpty()) {
+                for (ConstraintViolation<User> constraintViolation : violations) {
+                    throw new CannotBeNullException(constraintViolation.getMessage());
+                }
+            }
+        } catch (CannotBeNullException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        UserDto output = new UserDto(service.saveNewUser(user));
         return ResponseEntity.status(HttpStatus.CREATED).body(output);
 
     }
