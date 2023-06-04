@@ -4,11 +4,15 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 import mongo.project.demo.dto.UserDto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Document
 @Validated
@@ -21,6 +25,17 @@ public class User implements Serializable {
 
     @NotNull(message = "Email cannot be null")
     private String email;
+
+    @DBRef(lazy = true)
+    private List<Post> posts = new ArrayList<>();
+
+    public List<Post> getPosts() {
+        return this.posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
 
     public User(String id, String name, String email) {
         this.id = id;

@@ -24,7 +24,8 @@ public class Instanciation implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
+        userRepository.deleteAll();
+        postRepository.deleteAll();
         User maria = new User(null, "Maria Brown", "maria@gmail.com");
         User alex = new User(null, "Alex Green", "alex@gmail.com");
         User bob = new User(null, "Bob Grey", "bob@gmail.com");
@@ -35,7 +36,8 @@ public class Instanciation implements CommandLineRunner {
         Post post1 = new Post(null, sdf.parse("21/03/2018"), "Partiu", "vou viajar hoje", new AuthorDto(maria));
 
         postRepository.save(post1);
+        maria.getPosts().add(post1);
+        userRepository.save(maria);
 
-        userRepository.deleteAll();
     }
 }
