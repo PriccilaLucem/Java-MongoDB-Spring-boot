@@ -9,29 +9,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import mongo.project.demo.entities.Post;
-import mongo.project.demo.services.UserService;
+import mongo.project.demo.services.PostService;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/users/{id}/posts")
+@RequestMapping
 public class PostResource {
 
     @Autowired
-    private UserService service;
+    private PostService service;
 
-    @GetMapping
-    public ResponseEntity<?> getUser(@PathVariable String id) {
+    @GetMapping("/posts/{post_id}")
+    public ResponseEntity<?> getPost(@PathVariable String post_id) {
         try {
-            List<Post> posts = service.getUser(id).getPosts();
-            return ResponseEntity.ok().body(posts);
+            Post post = service.findById(post_id);
+            return ResponseEntity.ok().body(post);
         } catch (NoSuchElementException e) {
             java.util.Map<String, String> response = new HashMap<>();
-            response.put("error", "User not found");
+            response.put("error", "Post not found");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
 
     }
+
 }
